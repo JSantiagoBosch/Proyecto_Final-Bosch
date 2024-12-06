@@ -9,18 +9,22 @@ BEGIN
     VALUES (OLD.id_cliente, CONCAT('Cambio de ', OLD.nombre, ' a ', NEW.nombre), NOW());
 END; //
 
--- Trigger para actualizar el estado de la propiedad en función de las transacciones
+DROP TRIGGER IF EXISTS after_transaccion_insert;
+
+
 CREATE TRIGGER after_transaccion_insert
 AFTER INSERT ON transacciones
 FOR EACH ROW
 BEGIN
     UPDATE propiedades
     SET estado = CASE
-        WHEN NEW.tipo_transaccion = 'venta' THEN 'vendida'
-        WHEN NEW.tipo_transaccion = 'alquiler' THEN 'alquilada'
-        END
+        WHEN NEW.tipo_transaccion = 'Venta' THEN 'vendido'
+        WHEN NEW.tipo_transaccion = 'Alquiler' THEN 'alquilado'
+        ELSE estado
+    END
     WHERE id_propiedad = NEW.id_propiedad;
-END; //
+END //
+
 
 -- Trigger para mantener un registro de visitas
 CREATE TRIGGER before_visita_insert
@@ -51,4 +55,3 @@ BEGIN
 END; //
 
 DELIMITER ;
-

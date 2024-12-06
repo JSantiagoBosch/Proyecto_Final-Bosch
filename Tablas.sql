@@ -85,4 +85,3 @@ CREATE TABLE if not exists auditoria_propiedades (
 ALTER TABLE propiedades
 ADD CONSTRAINT fk_agente
 FOREIGN KEY (id_agente) REFERENCES agentes(id_agente);
-

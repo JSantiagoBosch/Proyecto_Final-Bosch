@@ -1,88 +1,88 @@
-create or replace view vw_propiedad_agente
-as
-select 
+CREATE OR REPLACE VIEW vw_propiedad_agente
+AS
+SELECT 
     p.direccion,
     p.ciudad,
     p.tipo,
     p.precio,
     p.estado,
-    a.Nombre as Nombre_Agente
-from 
+    a.Nombre AS Nombre_Agente
+FROM 
     propiedades p
-join 
-    agentes a on p.id_agente = a.ID_agente;
+JOIN 
+    agentes a ON p.id_agente = a.ID_agente;
 
 
 
-create or replace view vw_visitas_agentes
-as
-select 
+CREATE OR REPLACE VIEW vw_visitas_agentes
+AS
+SELECT 
     v.fecha_visita,
-    c.nombre as cliente_nombre,
-    a.nombre as agente_nombre,
-    p.direccion as propiedad_direccion,
-    p.ciudad as propiedad_ciudad,
-    p.tipo as propiedad_tipo
-from 
+    c.nombre AS cliente_nombre,
+    a.nombre AS agente_nombre,
+    p.direccion AS propiedad_direccion,
+    p.ciudad AS propiedad_ciudad,
+    p.tipo AS propiedad_tipo
+FROM 
     visitas v
-join 
-    clientes c on v.id_cliente = c.id_cliente
-join 
-    propiedades p on v.id_propiedad = p.id_propiedad
-join 
-    agentes a on p.id_agente = a.ID_agente;
+JOIN 
+    clientes c ON v.id_cliente = c.id_cliente
+JOIN 
+    propiedades p ON v.id_propiedad = p.id_propiedad
+JOIN 
+    agentes a ON p.id_agente = a.ID_agente;
 
 
 
-create or replace view vw_transacciones_clientes
-as
-select 
-    c.nombre as Nombre_Cliente,
-    p.direccion as Direccion_Propiedad,
-    p.ciudad as Ciudad_Propiedad,
-    t.tipo_transaccion as Tipo_Transaccion,
-    t.precio as Precio_Transaccion,
-    t.fecha_transaccion as Fecha_Transaccion
-from
+CREATE OR REPLACE VIEW vw_transacciones_clientes
+AS
+SELECT 
+    c.nombre AS Nombre_Cliente,
+    p.direccion AS Direccion_Propiedad,
+    p.ciudad AS Ciudad_Propiedad,
+    t.tipo_transaccion AS Tipo_Transaccion,
+    t.precio AS Precio_Transaccion,
+    t.fecha_transaccion AS Fecha_Transaccion
+FROM
     transacciones t
-join 
-    clientes c on t.id_cliente = c.id_cliente
-join 
-    propiedades p on t.id_propiedad = p.id_propiedad;
+JOIN 
+    clientes c ON t.id_cliente = c.id_cliente
+JOIN 
+    propiedades p ON t.id_propiedad = p.id_propiedad;
 
 
 
-create or replace view vw_propiedad_mas_visitada
-as
-select 
-    p.id_propiedad as ID_Propiedad,
-    p.direccion as Direccion,
-    p.ciudad as Ciudad,
-    COUNT(v.id_visita) as Total_Visitas
-from 
+CREATE OR REPLACE VIEW vw_propiedad_mas_visitada
+AS
+SELECT 
+    p.id_propiedad AS ID_Propiedad,
+    p.direccion AS Direccion,
+    p.ciudad AS Ciudad,
+    COUNT(v.id_visita) AS Total_Visitas
+FROM 
     propiedades p
-join 
-    visitas v on p.id_propiedad = v.id_propiedad
-group by 
+JOIN 
+    visitas v ON p.id_propiedad = v.id_propiedad
+GROUP BY 
     p.id_propiedad, p.direccion, p.ciudad
-order by 
-    Total_Visitas desc;
+ORDER BY 
+    Total_Visitas DESC;
 
 
 
-create or replace view vw_clientes_mas_transacciones
-as
-select 
-    c.nombre as Nombre_Cliente,
-    COUNT(t.id_transaccion) as Total_Transacciones
-from 
+CREATE OR REPLACE VIEW vw_clientes_mas_transacciones
+AS
+SELECT 
+    c.nombre AS Nombre_Cliente,
+    COUNT(t.id_transaccion) AS Total_Transacciones
+FROM 
     clientes c
-join 
-    transacciones t on c.id_cliente = t.id_cliente
-group by 
+JOIN 
+    transacciones t ON c.id_cliente = t.id_cliente
+GROUP BY 
     c.id_cliente, c.nombre
-order by 
-    Total_Transacciones desc;
+ORDER BY 
+    Total_Transacciones DESC;
 
 
 CREATE OR REPLACE VIEW vw_propiedades_disponibles_detalles
@@ -128,6 +128,3 @@ GROUP BY
     a.id_agente, a.nombre
 ORDER BY 
     Total_Transacciones DESC;
-    
-    
-    

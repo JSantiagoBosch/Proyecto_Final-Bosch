@@ -16,50 +16,65 @@ END //
 
 -- Función 2: ContadorTipoPropiedad
 CREATE FUNCTION ContadorTipoPropiedad()
-RETURNS VARCHAR(1000)
+RETURNS TEXT
+DETERMINISTIC
 READS SQL DATA
 BEGIN
     DECLARE resultado TEXT;
     
-    SELECT GROUP_CONCAT(CONCAT(tipo, ': ', COUNT(*)) SEPARATOR ', ') INTO resultado
-    FROM propiedades
-    GROUP BY tipo;
-    
+    -- Usamos una subconsulta para generar el GROUP_CONCAT y almacenarlo en resultado
+    SELECT GROUP_CONCAT(tipo_cantidad SEPARATOR ', ')
+    INTO resultado
+    FROM (
+        SELECT CONCAT(tipo, ': ', COUNT(*)) AS tipo_cantidad
+        FROM propiedades
+        GROUP BY tipo
+    ) AS subquery;
+
     RETURN resultado;
 END //
 
+
 -- Función 3: ObtenerInfoCliente
-CREATE FUNCTION ObtenerInfoCliente(id_cliente INT)
+CREATE FUNCTION ObtenerInfoCliente(p_id_cliente INT)
 RETURNS VARCHAR(1000)
 READS SQL DATA
 BEGIN
     DECLARE info_cliente TEXT;
     
-    SELECT CONCAT('Nombre: ', nombre, ', Email: ', email, ', Teléfono: ', telefono) INTO info_cliente
+    -- Construimos la información del cliente
+    SELECT CONCAT('Nombre: ', nombre, ', Email: ', email, ', Teléfono: ', telefono)
+    INTO info_cliente
     FROM clientes
-    WHERE id_cliente = id_cliente;
+    WHERE id_cliente = p_id_cliente;
     
+    -- Devolvemos la información
     RETURN info_cliente;
 END //
 
 -- Función 4: PropiedadDisponible
-CREATE FUNCTION PropiedadDisponible(id_propiedad INT)
+CREATE FUNCTION PropiedadDisponible(p_id_propiedad INT)
 RETURNS VARCHAR(50)
 DETERMINISTIC
 READS SQL DATA
 BEGIN
     DECLARE estado_propiedad VARCHAR(50);
-    
-    SELECT estado INTO estado_propiedad
+
+    -- Obtener el estado de la propiedad
+    SELECT estado 
+    INTO estado_propiedad
     FROM propiedades
-    WHERE id_propiedad = id_propiedad;
+    WHERE id_propiedad = p_id_propiedad
+    LIMIT 1;
     
+    -- Evaluamos si está disponible
     IF estado_propiedad = 'disponible' THEN
         RETURN 'La propiedad está disponible';
     ELSE
         RETURN 'La propiedad no está disponible';
     END IF;
 END //
+
 
 -- Función 5: HistorialVisitasCliente
 CREATE FUNCTION HistorialVisitasCliente(id_cliente INT)
@@ -93,6 +108,5 @@ END //
 
 -- Restauramos el delimitador por defecto
 DELIMITER ;
-
 
 

@@ -17,11 +17,15 @@ CREATE PROCEDURE AgregarNuevaPropiedad(
     IN p_direccion VARCHAR(255),
     IN p_precio DECIMAL(10,2),
     IN p_tipo VARCHAR(50),
-    IN p_estado VARCHAR(20)
+    IN p_estado VARCHAR(20),
+    IN p_id_agente INT,
+    IN p_ciudad VARCHAR(100),
+    IN p_superficie INT
 )
 BEGIN
-    INSERT INTO propiedades (direccion, precio, tipo, estado) 
-    VALUES (p_direccion, p_precio, p_tipo, p_estado);
+    -- Insertar una nueva propiedad, incluyendo el campo superficie
+    INSERT INTO propiedades (direccion, precio, tipo, estado, id_agente, ciudad, superficie) 
+    VALUES (p_direccion, p_precio, p_tipo, p_estado, p_id_agente, p_ciudad, p_superficie);
 END //
 
 -- Procedimiento 3: RegistrarVisita
@@ -35,18 +39,22 @@ BEGIN
     VALUES (p_id_cliente, p_id_propiedad, p_fecha_visita);
 END //
 
+
 -- Procedimiento 4: RealizarTransacción
+
 CREATE PROCEDURE RealizarTransacción(
     IN p_id_cliente INT,
     IN p_id_propiedad INT,
     IN p_tipo_transaccion VARCHAR(20),
     IN p_precio DECIMAL(10,2),
-    IN p_fecha_transaccion DATE
+    IN p_fecha_transaccion DATETIME
 )
 BEGIN
+    -- Inserta los datos en la tabla 'transacciones'
     INSERT INTO transacciones (id_cliente, id_propiedad, tipo_transaccion, precio, fecha_transaccion) 
     VALUES (p_id_cliente, p_id_propiedad, p_tipo_transaccion, p_precio, p_fecha_transaccion);
 END //
+
 
 -- Procedimiento 5: ActualizarEstadoPropiedad
 CREATE PROCEDURE ActualizarEstadoPropiedad(
@@ -59,14 +67,23 @@ BEGIN
     WHERE id_propiedad = p_id_propiedad;
 END //
 
+DROP PROCEDURE IF EXISTS EliminarCliente;
+
 -- Procedimiento 6: EliminarCliente
 CREATE PROCEDURE EliminarCliente(
     IN p_id_cliente INT
 )
 BEGIN
-    DELETE FROM clientes 
-    WHERE id_cliente = p_id_cliente;
+    -- Eliminar las visitas asociadas al cliente
+    DELETE FROM visitas WHERE id_cliente = p_id_cliente;
+
+    -- Eliminar las transacciones asociadas al cliente
+    DELETE FROM transacciones WHERE id_cliente = p_id_cliente;
+
+    -- Eliminar cliente
+    DELETE FROM clientes WHERE id_cliente = p_id_cliente;
 END //
+
 
 -- Procedimiento 7: ResumenTransacciones
 CREATE PROCEDURE ResumenTransacciones(
